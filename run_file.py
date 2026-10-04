@@ -44,7 +44,7 @@ def run_topology(topology, LAx, LAy, L1y = 0.1, L2x = 0.1, L2z = 0.1, l_max = 10
 
   if param['topology'] == 'E7':
     a = E7(param=param, make_run_folder=True)
-  if param['topology'] == 'E9':
+  elif param['topology'] == 'E9':
     a = E9(param=param, make_run_folder=True)
   else:
     exit()

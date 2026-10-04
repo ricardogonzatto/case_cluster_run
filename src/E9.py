@@ -118,7 +118,8 @@ def get_list_of_k_phi_theta(k_max, k_min, L_Ax, L_Ay, L_1y, L_2x, L_2z, x0):
     cur_index = 0
     
     # 1 Subspace
-    modes = [(nx, 0, nz) for nx in range(-n_x_max, n_x_max + 1) for nz in range(-n_z_max, n_z_max + 1) if nx != 0 or nz != 0]
+    
+    modes = [(nx, 0, nz) for nx in range(-n_x_max, n_x_max + 1) if nx % 2 == 0 for nz in range(-n_z_max, n_z_max + 1) if nx != 0 or nz != 0]
     k_y = 0
 
     for (n_x, n_y, n_z) in modes:
