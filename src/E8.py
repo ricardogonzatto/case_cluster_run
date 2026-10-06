@@ -98,7 +98,6 @@ class E8(Topology):
     return k_amp, phi, theta 
   
 
-
 #@njit(parallel = False)
 def get_list_of_k_phi_theta(k_max, k_min, LAx, LAy, LBx, LBz, LCy, x0):
     # Returns list of k, phi, and theta for this topology
@@ -107,8 +106,8 @@ def get_list_of_k_phi_theta(k_max, k_min, LAx, LAy, LBx, LBz, LCy, x0):
     M_B = np.array([[-1, 0, 0], [0, 1, 0], [0, 0, 1]])
 
     n_x_max = int(np.ceil(k_max * LAx / pi))
-    n_y_max = int(np.ceil(k_max * LBz / pi))
-    n_z_max = int(np.ceil(k_max * LCy / pi))
+    n_y_max = int(np.ceil(k_max * LCy / pi))
+    n_z_max = int(np.ceil(k_max * LBz / pi))
  
     list_length = n_x_max * n_y_max * n_z_max * 8
     k_amp = np.zeros(list_length)
@@ -123,13 +122,13 @@ def get_list_of_k_phi_theta(k_max, k_min, LAx, LAy, LBx, LBz, LCy, x0):
     cur_index = 0
 
     # 1 Subspace 
-    modes_N1 = [(0, 0, n_z) for n_z in range(-n_z_max, n_z_max+1) if n_z != 0]
+    modes_N1 = [(0, 0, n_z) for n_z in range(-n_z_max, n_z_max+1) if n_z != 0 and n_z % 2 == 0]
 
     for (n_x, n_y, n_z) in modes_N1:
 
         k_x = (np.pi * n_x) / LAx
-        k_y = (np.pi * n_z) / LCy
-        k_z = (np.pi * n_y) / LBz     
+        k_y = (np.pi * n_y) / LCy
+        k_z = (np.pi * n_z) / LBz     
 
         k_vec = np.array([k_x, k_y, k_z])
         k_amp_cur = np.linalg.norm(k_vec)
@@ -150,13 +149,13 @@ def get_list_of_k_phi_theta(k_max, k_min, LAx, LAy, LBx, LBz, LCy, x0):
     subspace1_interval = [0, cur_index]
 
     # 2 Subspace 
-    modes_N2 = [(n_x, 0, n_z) for n_x in range(1, n_x_max+1) for n_z in range(-n_z_max, n_z_max+1)]
+    modes_N2 = [(n_x, 0, n_z) for n_x in range(-n_x_max, n_x_max+1) if n_x % 2 == 0 and n_x != 0 for n_z in range(-n_z_max, n_z_max+1)]
 
     for (n_x, n_y, n_z) in modes_N2:
 
         k_x = (np.pi * n_x) / LAx
-        k_y = (np.pi * n_z) / LCy
-        k_z = (np.pi * n_y) / LBz     
+        k_y = (np.pi * n_y) / LCy
+        k_z = (np.pi * n_z) / LBz     
 
         k_vec = np.array([k_x, k_y, k_z])
         k_amp_cur = np.linalg.norm(k_vec)
@@ -177,13 +176,13 @@ def get_list_of_k_phi_theta(k_max, k_min, LAx, LAy, LBx, LBz, LCy, x0):
     subspace2_interval = [subspace1_interval[1], cur_index]
 
     # 3 Subspace 
-    modes_N3 = [(0, n_y, n_z) for n_y in range(1, n_y_max+1) for n_z in range(-n_z_max, n_z_max+1)]
+    modes_N3 = [(0, n_y, n_z) for n_y in range(-n_y_max, n_y_max+1) if n_y != 0 for n_z in range(-n_z_max, n_z_max+1) if n_z % 2 == 0]
 
     for (n_x, n_y, n_z) in modes_N3:
 
         k_x = (np.pi * n_x) / LAx
-        k_y = (np.pi * n_z) / LCy
-        k_z = (np.pi * n_y) / LBz     
+        k_y = (np.pi * n_y) / LCy
+        k_z = (np.pi * n_z) / LBz     
 
         k_vec = np.array([k_x, k_y, k_z])
         k_amp_cur = np.linalg.norm(k_vec)
@@ -204,15 +203,13 @@ def get_list_of_k_phi_theta(k_max, k_min, LAx, LAy, LBx, LBz, LCy, x0):
     subspace3_interval = [subspace2_interval[1], cur_index]
 
     # 4 Subspace
-    modes_1_N4 = [(n_x, n_y, n_z) for n_x in range(1, n_x_max+1) for n_y in range(-n_y_max, n_y_max+1) for n_z in range(-n_z_max, n_z_max+1)]
-    modes_2_N4 = [(0, n_y, n_z) for n_y in range(1, n_y_max+1) for n_z in range(-n_z_max, n_z_max+1)]
-    modes_N4 = np.concatenate((modes_1_N4, modes_2_N4))
+    modes_N4 = [(n_x, n_y, n_z) for n_x in range(1, n_x_max+1) for n_y in range(1, n_y_max+1) for n_z in range(-n_z_max, n_z_max+1)]
 
     for (n_x, n_y, n_z) in modes_N4:
 
         k_x = (np.pi * n_x) / LAx
-        k_y = (np.pi * n_z) / LCy
-        k_z = (np.pi * n_y) / LBz     
+        k_y = (np.pi * n_y) / LCy
+        k_z = (np.pi * n_z) / LBz     
 
         k_vec = np.array([k_x, k_y, k_z])
         k_amp_cur = np.linalg.norm(k_vec)
@@ -287,11 +284,18 @@ def get_c_lmlpmp(min_ell,
         phase_list_minus = np.exp(-1j * phi[i] * m_list)
         phase_list_plus  = np.exp(1j * phi[i] * m_list)
 
+        cur_tilde_xi = tilde_xi[i, :]
+        
         for ell in range(min_ell, max_ell + 1):
             
-            coef_T_ell = ipow[ell%4] * sqrt(pi* (2 * ell + 1) * (ell + 2) * (ell + 1) * ell * (ell - 1) / 2)
-            coef_E_B_ell = ipow[ell%4] * sqrt(pi* (2 * ell + 1) / 2)
+            coef_T_ell = sqrt(pi* (2 * ell + 1) * (ell + 2) * (ell + 1) * ell * (ell - 1) / 2)
+            coef_E_B_ell = sqrt(pi* (2 * ell + 1)/2)
 
+            if ell_p_range[0] > ell:
+                l_start = ell_p_range[0]
+            else:
+                l_start = ell
+            
             for m in range(-ell, ell + 1):
 
                 abs_m = np.abs(m)
@@ -299,290 +303,426 @@ def get_c_lmlpmp(min_ell,
                 lm_index_cur = ell * (ell+1) + m - ell_range[0] * ell_range[0]
 
                 if m<0:
-                    wigner_d_l_m_plus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
-                    wigner_d_l_m_minus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
+                    wigner_D_l_m_plus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
+                    wigner_D_l_m_minus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
                 else:
-                    wigner_d_l_m_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m] 
-                    wigner_d_l_m_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m]  
+                    wigner_D_l_m_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m] 
+                    wigner_D_l_m_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m]  
 
-                xi_lm_plus = oversqrt2 * tilde_xi[i, 0] * wigner_d_l_m_plus2
-                xi_lm_minus = oversqrt2 * tilde_xi[i, 1] * wigner_d_l_m_minus2
+                xi_T_lm = cur_tilde_xi[0] * wigner_D_l_m_plus2 + cur_tilde_xi[1] * wigner_D_l_m_minus2
+                xi_E_lm = - xi_T_lm
+                xi_B_lm = cur_tilde_xi[0] * wigner_D_l_m_plus2 - cur_tilde_xi[1] * wigner_D_l_m_minus2
 
-                for ell_p in range(ell_p_range[0], ell_p_range[1] + 1):
-                    
-                    if k_amp_cur > np.sqrt(k_max_list[ell]*k_max_list[ell_p]) and k_amp_cur > min_k_amp:
-                        continue 
+                for ell_p in range(l_start, ell_p_range[1] + 1):
 
-                    coef_T_ell_p = ipow[ell_p%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
-                    coef_E_B_ell_p = ipow[ell_p%4] * sqrt(pi* (2 * ell_p + 1)/2)
+                    coef_T_ell_p = ipow[(ell - ell_p)%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
+                    coef_E_B_ell_p = ipow[(ell - ell_p)%4] * sqrt(pi* (2 * ell_p + 1)/2)
 
-                    for m_p in range(-ell_p, ell_p + 1):
+                    # coefficients for the lower block (row ell_p, column ell)
+                    coef_T_ell_p_low = ipow[(ell_p - ell)%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
+                    coef_E_B_ell_p_low = ipow[(ell_p - ell)%4] * sqrt(pi* (2 * ell_p + 1)/2)
+
+                    for m_p in range(0, ell_p + 1):
                 
                         abs_m_p = np.abs(m_p)
-                        wigner_d_l_m_2ner_p_cur_index = lm_index[ell_p, abs_m_p]
+                        wigner_d_l_m_2_cur_index = lm_index[ell_p, abs_m_p] 
+                        
+                        lm_p_index_cur = ell_p * (ell_p+1) + m_p - ell_p_range[0] * ell_p_range[0]        
 
-                        lm_p_index_cur = ell_p * (ell_p+1) + m_p - ell_range[0] * ell_range[0] 
-
-                        if m_p < 0:
-                            wigner_d_l_m_p_plus2 = shortle[abs_m_p%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2ner_p_cur_index] * phase_list_plus[abs_m_p]
-                            wigner_d_l_m_p_minus2 = shortle[abs_m_p%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2ner_p_cur_index] * phase_list_plus[abs_m_p]
-                        else:
-                            wigner_d_l_m_p_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2ner_p_cur_index] * phase_list_minus[abs_m_p] 
-                            wigner_d_l_m_p_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2ner_p_cur_index] * phase_list_minus[abs_m_p]
-
-                        xi_lm_p_plus = oversqrt2 * tilde_xi[i, 0] * wigner_d_l_m_p_plus2
-                        xi_lm_p_minus =  oversqrt2 * tilde_xi[i, 1] * wigner_d_l_m_p_minus2
-
-                        Xi_plus = (xi_lm_plus * conjugate(xi_lm_p_plus) + xi_lm_minus * conjugate(xi_lm_p_minus))
-                        Xi_minus = (xi_lm_minus * conjugate(xi_lm_p_minus) - xi_lm_plus * conjugate(xi_lm_p_plus))
-
+                        wigner_D_l_m_p_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p] 
+                        wigner_D_l_m_p_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p]  
+    
+                        xi_T_lm_p = cur_tilde_xi[0] * wigner_D_l_m_p_plus2 + cur_tilde_xi[1] * wigner_D_l_m_p_minus2
+                        xi_E_lm_p = - xi_T_lm_p
+                        xi_B_lm_p = cur_tilde_xi[0] * wigner_D_l_m_p_plus2 - cur_tilde_xi[1] * wigner_D_l_m_p_minus2
+                                                                        
+                        Xi_TT = xi_T_lm * conjugate(xi_T_lm_p)
+                        Xi_EE = xi_E_lm * conjugate(xi_E_lm_p)
+                        Xi_TE = xi_T_lm * conjugate(xi_E_lm_p)
+                        Xi_BB = xi_B_lm * conjugate(xi_B_lm_p)
+                        Xi_EB = xi_E_lm * conjugate(xi_B_lm_p)
+                        Xi_TB = xi_T_lm * conjugate(xi_B_lm_p)
+                        
                         # TT correlations
-                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT 
 
                         # EE correlations
-                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
 
                         # BB correlations
-                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
 
                         # TE correlations
-                        C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_TE
 
                         # EB correlations
-                        C_lmlpmp[4, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[4, k_unique_index_cur, ell, ell_p] * Xi_minus
+                        C_lmlpmp[4, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[4, k_unique_index_cur, ell, ell_p] * Xi_EB
 
                         # TB correlations
-                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_minus
+                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_TB
+
+                        if ell != ell_p:
+
+                            # Lower block: row (ell_p, m_p), column (ell, m). The first field sits on the row,
+                            # so e.g. EB needs xi_E(ell_p m_p) * conj(xi_B(ell m)), not conj(Xi_EB) (which is BE)
+                            Xi_TE_low = xi_T_lm_p * conjugate(xi_E_lm)
+                            Xi_EB_low = xi_E_lm_p * conjugate(xi_B_lm)
+                            Xi_TB_low = xi_T_lm_p * conjugate(xi_B_lm)
+                            # TE correlations
+                            C_lmlpmp[3, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[3, k_unique_index_cur, ell_p, ell] * Xi_TE_low
+                            # EB correlations
+                            C_lmlpmp[4, lm_p_index_cur, lm_index_cur] += coef_E_B_ell_p_low * coef_E_B_ell * integrand[4, k_unique_index_cur, ell_p, ell] * Xi_EB_low
+                            # TB correlations
+                            C_lmlpmp[5, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[5, k_unique_index_cur, ell_p, ell] * Xi_TB_low
 
     # 2 Subspace 
     for i in range(subspace2_interval[0], subspace2_interval[1]):
-        
+            
         k_amp_cur = k_amp[i]
         wigner_d_l_m_index = theta_unique_index[i]
         k_unique_index_cur = k_amp_unique_index[i]
         phase_list_minus = np.exp(-1j * phi[i] * m_list)
         phase_list_plus  = np.exp(1j * phi[i] * m_list)
 
+        cur_tilde_xi = tilde_xi[i, :]
+    
         for ell in range(min_ell, max_ell + 1):
             
-            coef_T_ell = ipow[ell%4] * sqrt(pi* (2 * ell + 1) * (ell + 2) * (ell + 1) * ell * (ell - 1) / 2)
-            coef_E_B_ell = ipow[ell%4] * sqrt(pi* (2 * ell + 1) / 2)
+            coef_T_ell = sqrt(pi* (2 * ell + 1) * (ell + 2) * (ell + 1) * ell * (ell - 1) / 2)
+            coef_E_B_ell = sqrt(pi* (2 * ell + 1) / 2)
 
+            if ell_p_range[0] > ell:
+                l_start = ell_p_range[0]
+            else:
+                l_start = ell
+            
             for m in range(-ell, ell + 1):
-
+                
                 abs_m = np.abs(m)
-                wigner_d_l_m_2_cur_index = lm_index[ell, abs_m]
+                wigner_d_l_m_2_cur_index = lm_index[ell, abs_m]   
                 lm_index_cur = ell * (ell+1) + m - ell_range[0] * ell_range[0]
-
+                
                 if m<0:
-                    wigner_d_l_m_plus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
-                    wigner_d_l_m_minus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
+                    wigner_D_l_m_plus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
+                    wigner_D_l_m_minus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
                 else:
-                    wigner_d_l_m_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m] 
-                    wigner_d_l_m_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m]  
+                    wigner_D_l_m_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m] 
+                    wigner_D_l_m_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m]  
 
-                xi_lm_plus = oversqrt2 * (tilde_xi[i, 0] * wigner_d_l_m_plus2 + tilde_xi[i, 1] * wigner_d_l_m_minus2)
-                xi_lm_minus = oversqrt2 * (tilde_xi[i, 0] * wigner_d_l_m_minus2 + tilde_xi[i, 1] * wigner_d_l_m_plus2)
+                xi_T_lm_plus = (cur_tilde_xi[0] * wigner_D_l_m_plus2 + shortle[abs_m%2] * cur_tilde_xi[1] * conjugate(wigner_D_l_m_minus2))
+                xi_T_lm_minus = (cur_tilde_xi[0] * wigner_D_l_m_minus2 + shortle[abs_m%2] * cur_tilde_xi[1] * conjugate(wigner_D_l_m_plus2))
 
-                for ell_p in range(ell_p_range[0], ell_p_range[1] + 1):
-                    
-                    if k_amp_cur > np.sqrt(k_max_list[ell]*k_max_list[ell_p]) and k_amp_cur > min_k_amp:
-                        continue 
+                xi_E_lm_plus = - xi_T_lm_plus
+                xi_E_lm_minus = - xi_T_lm_minus
 
-                    coef_T_ell_p = ipow[ell_p%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
-                    coef_E_B_ell_p = ipow[ell_p%4] * sqrt(pi* (2 * ell_p + 1)/2)
+                xi_B_lm_plus = -(cur_tilde_xi[0] * wigner_D_l_m_plus2 - shortle[abs_m%2] * cur_tilde_xi[1] * conjugate(wigner_D_l_m_minus2))
+                xi_B_lm_minus = (cur_tilde_xi[0] * wigner_D_l_m_minus2 - shortle[abs_m%2] * cur_tilde_xi[1] * conjugate(wigner_D_l_m_plus2))
 
-                    for m_p in range(-ell_p, ell_p + 1):
+                for ell_p in range(l_start, ell_p_range[1] + 1):
 
-                        if k_amp_cur > np.sqrt(k_max_list[ell]*k_max_list[ell_p]) and k_amp_cur > min_k_amp:
-                            continue 
+                    coef_T_ell_p = ipow[(ell - ell_p)%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
+                    coef_E_B_ell_p = ipow[(ell - ell_p)%4] * sqrt(pi* (2 * ell_p + 1)/2)
+
+                    # coefficients for the lower block (row ell_p, column ell)
+                    coef_T_ell_p_low = ipow[(ell_p - ell)%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
+                    coef_E_B_ell_p_low = ipow[(ell_p - ell)%4] * sqrt(pi* (2 * ell_p + 1)/2)
+
+                    for m_p in range(0, ell_p + 1):
                 
                         abs_m_p = np.abs(m_p)
                         wigner_d_l_m_2_cur_index = lm_index[ell_p, abs_m_p]
-                        lm_p_index_cur = ell_p * (ell_p+1) + m_p - ell_range[0] * ell_range[0]
+                        lm_p_index_cur = ell_p * (ell_p+1) + m_p - ell_p_range[0] * ell_p_range[0]
 
-                        if m_p<0:
-                            wigner_d_l_m_p_plus2 = shortle[abs_m_p%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m_p]
-                            wigner_d_l_m_p_minus2 = shortle[abs_m_p%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m_p]
-                        else:
-                            wigner_d_l_m_p_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p] 
-                            wigner_d_l_m_p_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p]  
+                        wigner_D_l_m_p_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p] 
+                        wigner_D_l_m_p_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p]  
 
-                        xi_lm_p_plus = oversqrt2 * (tilde_xi[i, 0] * wigner_d_l_m_p_plus2 + tilde_xi[i, 1] * wigner_d_l_m_p_minus2)
-                        xi_lm_p_minus = oversqrt2 * (tilde_xi[i, 0] * wigner_d_l_m_p_minus2 + tilde_xi[i, 1] * wigner_d_l_m_p_plus2)
+                        xi_T_lm_p_plus = (cur_tilde_xi[0] * wigner_D_l_m_p_plus2 + shortle[abs_m_p%2] * cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_minus2))
+                        xi_T_lm_p_minus = (cur_tilde_xi[0] * wigner_D_l_m_p_minus2 + shortle[abs_m_p%2] * cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_plus2))
+                            
+                        xi_E_lm_p_plus = - xi_T_lm_p_plus
+                        xi_E_lm_p_minus = - xi_T_lm_p_minus
+                            
+                        xi_B_lm_p_plus = -(cur_tilde_xi[0] * wigner_D_l_m_p_plus2 - shortle[abs_m_p%2] * cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_minus2))
+                        xi_B_lm_p_minus = (cur_tilde_xi[0] * wigner_D_l_m_p_minus2 - shortle[abs_m_p%2] * cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_plus2))
+                                                                                        
+                        Xi_TT = (xi_T_lm_plus * conjugate(xi_T_lm_p_plus) + xi_T_lm_minus * conjugate(xi_T_lm_p_minus))
+                        Xi_EE = (xi_E_lm_plus * conjugate(xi_E_lm_p_plus) + xi_E_lm_minus * conjugate(xi_E_lm_p_minus))
+                        Xi_TE = (xi_T_lm_plus * conjugate(xi_E_lm_p_plus) + xi_T_lm_minus * conjugate(xi_E_lm_p_minus))
+                        Xi_BB = (xi_B_lm_plus * conjugate(xi_B_lm_p_plus) + xi_B_lm_minus * conjugate(xi_B_lm_p_minus))
+                        Xi_EB = (xi_E_lm_plus * conjugate(xi_B_lm_p_plus) + xi_E_lm_minus * conjugate(xi_B_lm_p_minus))
+                        Xi_TB = (xi_T_lm_plus * conjugate(xi_B_lm_p_plus) + xi_T_lm_minus * conjugate(xi_B_lm_p_minus))
                         
-                        Xi_plus = (xi_lm_plus * conjugate(xi_lm_p_plus) + xi_lm_minus * conjugate(xi_lm_p_minus))
-                        Xi_minus = (xi_lm_minus * conjugate(xi_lm_p_minus) - xi_lm_plus * conjugate(xi_lm_p_plus))
-            #            Xi_BB = (xi_lm_B_plus * conjugate(xi_lm_p_B_plus) + xi_lm_B_minus * conjugate(xi_lm_p_B_minus))
-
                         # TT correlations
-                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p  * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT
 
                         # EE correlations
-                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
 
                         # BB correlations
-                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
 
                         # TE correlations
-                        C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_TE
 
                         # EB correlations
-                        C_lmlpmp[4, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[4, k_unique_index_cur, ell, ell_p] * Xi_minus
+                        C_lmlpmp[4, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[4, k_unique_index_cur, ell, ell_p] * Xi_EB
 
                         # TB correlations
-                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_minus
+                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_TB
 
+                        if ell != ell_p:
+                            
+                            # Lower block: row (ell_p, m_p), column (ell, m), first field on the row
+                            Xi_TE_low = (xi_T_lm_p_plus * conjugate(xi_E_lm_plus) + xi_T_lm_p_minus * conjugate(xi_E_lm_minus))
+                            Xi_EB_low = (xi_E_lm_p_plus * conjugate(xi_B_lm_plus) + xi_E_lm_p_minus * conjugate(xi_B_lm_minus))
+                            Xi_TB_low = (xi_T_lm_p_plus * conjugate(xi_B_lm_plus) + xi_T_lm_p_minus * conjugate(xi_B_lm_minus))
+                            # TE correlations
+                            C_lmlpmp[3, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[3, k_unique_index_cur, ell_p, ell] * Xi_TE_low
+                            # EB correlations
+                            C_lmlpmp[4, lm_p_index_cur, lm_index_cur] += coef_E_B_ell_p_low * coef_E_B_ell * integrand[4, k_unique_index_cur, ell_p, ell] * Xi_EB_low
+                            # TB correlations
+                            C_lmlpmp[5, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[5, k_unique_index_cur, ell_p, ell] * Xi_TB_low
+
+    
     # 3 Subspace 
     for i in range(subspace3_interval[0], subspace3_interval[1]):
-        
+            
         k_amp_cur = k_amp[i]
         wigner_d_l_m_index = theta_unique_index[i]
         k_unique_index_cur = k_amp_unique_index[i]
         phase_list_minus = np.exp(-1j * phi[i] * m_list)
         phase_list_plus  = np.exp(1j * phi[i] * m_list)
 
+        cur_tilde_xi = tilde_xi[i, :]
+    
         for ell in range(min_ell, max_ell + 1):
             
-            coef_T_ell = ipow[ell%4] * sqrt(pi* (2 * ell + 1) * (ell + 2) * (ell + 1) * ell * (ell - 1) / 2)
-            coef_E_B_ell = ipow[ell%4] * sqrt(pi* (2 * ell + 1) / 2)
+            coef_T_ell = sqrt(pi* (2 * ell + 1) * (ell + 2) * (ell + 1) * ell * (ell - 1) / 2)
+            coef_E_B_ell = sqrt(pi* (2 * ell + 1) / 2)
 
+            if ell_p_range[0] > ell:
+                l_start = ell_p_range[0]
+            else:
+                l_start = ell
+            
             for m in range(-ell, ell + 1):
-
+                
                 abs_m = np.abs(m)
-                wigner_d_l_m_2_cur_index = lm_index[ell, abs_m]
+                wigner_d_l_m_2_cur_index = lm_index[ell, abs_m]   
                 lm_index_cur = ell * (ell+1) + m - ell_range[0] * ell_range[0]
-
+                
                 if m<0:
-                    wigner_d_l_m_plus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
-                    wigner_d_l_m_minus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
+                    wigner_D_l_m_plus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
+                    wigner_D_l_m_minus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
                 else:
-                    wigner_d_l_m_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m] 
-                    wigner_d_l_m_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m]  
+                    wigner_D_l_m_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m] 
+                    wigner_D_l_m_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m]  
 
-                xi_lm_plus = oversqrt2 * (tilde_xi[i, 0] * wigner_d_l_m_plus2 + tilde_xi[i, 1] * wigner_d_l_m_minus2)
-                xi_lm_minus = oversqrt2 * (tilde_xi[i, 0] * wigner_d_l_m_minus2 + tilde_xi[i, 1] * wigner_d_l_m_plus2)
+                xi_T_lm_plus = (cur_tilde_xi[0] * wigner_D_l_m_plus2 + cur_tilde_xi[1] * conjugate(wigner_D_l_m_minus2))
+                xi_T_lm_minus = (cur_tilde_xi[0] * wigner_D_l_m_minus2 + cur_tilde_xi[1] * conjugate(wigner_D_l_m_plus2))
 
-                for ell_p in range(ell_p_range[0], ell_p_range[1] + 1):
-                    
-                    if k_amp_cur > np.sqrt(k_max_list[ell]*k_max_list[ell_p]) and k_amp_cur > min_k_amp:
-                        continue 
+                xi_E_lm_plus = - xi_T_lm_plus
+                xi_E_lm_minus = - xi_T_lm_minus
 
-                    coef_T_ell_p = ipow[ell_p%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
-                    coef_E_B_ell_p = ipow[ell_p%4] * sqrt(pi* (2 * ell_p + 1)/2)
+                xi_B_lm_plus = -(cur_tilde_xi[0] * wigner_D_l_m_plus2 - cur_tilde_xi[1] * conjugate(wigner_D_l_m_minus2))
+                xi_B_lm_minus = (cur_tilde_xi[0] * wigner_D_l_m_minus2 - cur_tilde_xi[1] * conjugate(wigner_D_l_m_plus2))
 
-                    for m_p in range(-ell_p, ell_p + 1):
+                for ell_p in range(l_start, ell_p_range[1] + 1):
 
-                        if k_amp_cur > np.sqrt(k_max_list[ell]*k_max_list[ell_p]) and k_amp_cur > min_k_amp:
-                            continue 
+                    coef_T_ell_p = ipow[(ell - ell_p)%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
+                    coef_E_B_ell_p = ipow[(ell - ell_p)%4] * sqrt(pi* (2 * ell_p + 1)/2)
+
+                    # coefficients for the lower block (row ell_p, column ell)
+                    coef_T_ell_p_low = ipow[(ell_p - ell)%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
+                    coef_E_B_ell_p_low = ipow[(ell_p - ell)%4] * sqrt(pi* (2 * ell_p + 1)/2)
+
+                    for m_p in range(0, ell_p + 1):
                 
                         abs_m_p = np.abs(m_p)
                         wigner_d_l_m_2_cur_index = lm_index[ell_p, abs_m_p]
-                        lm_p_index_cur = ell_p * (ell_p+1) + m_p - ell_range[0] * ell_range[0]
+                        lm_p_index_cur = ell_p * (ell_p+1) + m_p - ell_p_range[0] * ell_p_range[0]
 
-                        if m_p<0:
-                            wigner_d_l_m_p_plus2 = shortle[abs_m_p%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m_p]
-                            wigner_d_l_m_p_minus2 = shortle[abs_m_p%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m_p]
-                        else:
-                            wigner_d_l_m_p_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p] 
-                            wigner_d_l_m_p_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p]  
+                        wigner_D_l_m_p_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p] 
+                        wigner_D_l_m_p_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p]  
 
-                        xi_lm_p_plus = oversqrt2 * (tilde_xi[i, 0] * wigner_d_l_m_p_plus2 + tilde_xi[i, 1] * wigner_d_l_m_p_minus2)
-                        xi_lm_p_minus = oversqrt2 * (tilde_xi[i, 0] * wigner_d_l_m_p_minus2 + tilde_xi[i, 1] * wigner_d_l_m_p_plus2)
-
+                        xi_T_lm_p_plus = (cur_tilde_xi[0] * wigner_D_l_m_p_plus2 + cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_minus2))
+                        xi_T_lm_p_minus = (cur_tilde_xi[0] * wigner_D_l_m_p_minus2 + cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_plus2))
+                            
+                        xi_E_lm_p_plus = - xi_T_lm_p_plus
+                        xi_E_lm_p_minus = - xi_T_lm_p_minus
+                            
+                        xi_B_lm_p_plus = -(cur_tilde_xi[0] * wigner_D_l_m_p_plus2 - cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_minus2))
+                        xi_B_lm_p_minus = (cur_tilde_xi[0] * wigner_D_l_m_p_minus2 - cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_plus2))
+                                                                                        
+                        Xi_TT = (xi_T_lm_plus * conjugate(xi_T_lm_p_plus) + xi_T_lm_minus * conjugate(xi_T_lm_p_minus))
+                        Xi_EE = (xi_E_lm_plus * conjugate(xi_E_lm_p_plus) + xi_E_lm_minus * conjugate(xi_E_lm_p_minus))
+                        Xi_TE = (xi_T_lm_plus * conjugate(xi_E_lm_p_plus) + xi_T_lm_minus * conjugate(xi_E_lm_p_minus))
+                        Xi_BB = (xi_B_lm_plus * conjugate(xi_B_lm_p_plus) + xi_B_lm_minus * conjugate(xi_B_lm_p_minus))
+                        Xi_EB = (xi_E_lm_plus * conjugate(xi_B_lm_p_plus) + xi_E_lm_minus * conjugate(xi_B_lm_p_minus))
+                        Xi_TB = (xi_T_lm_plus * conjugate(xi_B_lm_p_plus) + xi_T_lm_minus * conjugate(xi_B_lm_p_minus))
+                        
                         # TT correlations
-                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p  * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT
 
                         # EE correlations
-                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
 
                         # BB correlations
-                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
 
                         # TE correlations
-                        C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_TE
 
                         # EB correlations
-                        C_lmlpmp[4, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[4, k_unique_index_cur, ell, ell_p] * Xi_minus
+                        C_lmlpmp[4, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[4, k_unique_index_cur, ell, ell_p] * Xi_EB
 
                         # TB correlations
-                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_minus
+                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_TB
+
+                        if ell != ell_p:
+                            
+                            # Lower block: row (ell_p, m_p), column (ell, m), first field on the row
+                            Xi_TE_low = (xi_T_lm_p_plus * conjugate(xi_E_lm_plus) + xi_T_lm_p_minus * conjugate(xi_E_lm_minus))
+                            Xi_EB_low = (xi_E_lm_p_plus * conjugate(xi_B_lm_plus) + xi_E_lm_p_minus * conjugate(xi_B_lm_minus))
+                            Xi_TB_low = (xi_T_lm_p_plus * conjugate(xi_B_lm_plus) + xi_T_lm_p_minus * conjugate(xi_B_lm_minus))
+                            # TE correlations
+                            C_lmlpmp[3, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[3, k_unique_index_cur, ell_p, ell] * Xi_TE_low
+                            # EB correlations
+                            C_lmlpmp[4, lm_p_index_cur, lm_index_cur] += coef_E_B_ell_p_low * coef_E_B_ell * integrand[4, k_unique_index_cur, ell_p, ell] * Xi_EB_low
+                            # TB correlations
+                            C_lmlpmp[5, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[5, k_unique_index_cur, ell_p, ell] * Xi_TB_low
 
 
-    # 4 Subspace 
+   # 4 Subspace 
     for i in range(subspace4_interval[0], subspace4_interval[1]):
-        
+            
         k_amp_cur = k_amp[i]
         wigner_d_l_m_index = theta_unique_index[i]
         k_unique_index_cur = k_amp_unique_index[i]
         phase_list_minus = np.exp(-1j * phi[i] * m_list)
         phase_list_plus  = np.exp(1j * phi[i] * m_list)
 
+        cur_tilde_xi = tilde_xi[i, :]
+    
         for ell in range(min_ell, max_ell + 1):
             
-            coef_T_ell = ipow[ell%4] * sqrt(pi* (2 * ell + 1) * (ell + 2) * (ell + 1) * ell * (ell - 1) / 2)
-            coef_E_B_ell = ipow[ell%4] * sqrt(pi* (2 * ell + 1) / 2)
+            coef_T_ell = sqrt(pi* (2 * ell + 1) * (ell + 2) * (ell + 1) * ell * (ell - 1) / 2)
+            coef_E_B_ell = sqrt(pi* (2 * ell + 1) / 2)
 
+            if ell_p_range[0] > ell:
+                l_start = ell_p_range[0]
+            else:
+                l_start = ell
+            
             for m in range(-ell, ell + 1):
-
+                
                 abs_m = np.abs(m)
-                wigner_d_l_m_2_cur_index = lm_index[ell, abs_m]
+                wigner_d_l_m_2_cur_index = lm_index[ell, abs_m]   
                 lm_index_cur = ell * (ell+1) + m - ell_range[0] * ell_range[0]
-
+                
                 if m<0:
-                    wigner_d_l_m_plus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
-                    wigner_d_l_m_minus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
+                    wigner_D_l_m_plus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
+                    wigner_D_l_m_minus2 = shortle[abs_m%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m]
                 else:
-                    wigner_d_l_m_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m] 
-                    wigner_d_l_m_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m]  
+                    wigner_D_l_m_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m] 
+                    wigner_D_l_m_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m]  
 
-                xi_lm_plus = oversqrt4 * (tilde_xi[i, 0] * wigner_d_l_m_plus2 + shortle[abs_m%2] * tilde_xi[i, 1] * wigner_d_l_m_minus2 + tilde_xi[i, 2] * wigner_d_l_m_minus2 + shortle[abs_m%2] * tilde_xi[i, 3] * wigner_d_l_m_plus2)
-                xi_lm_minus = oversqrt4 * (tilde_xi[i, 0] * wigner_d_l_m_minus2 + shortle[abs_m%2] * tilde_xi[i, 1] * wigner_d_l_m_plus2 + tilde_xi[i, 2] * wigner_d_l_m_plus2 + shortle[abs_m%2] * tilde_xi[i, 3] * wigner_d_l_m_minus2)
+                # (-1)^m D_{-m,mu} = conj(D_{m,-mu}): terms 1,4 keep the helicity, terms 2,3 flip it
+                # oversqrt2: A_l/sqrt(4V) here vs the global 1/(2V)
+                xi_T_lm_plus = oversqrt2 * ((cur_tilde_xi[0] + shortle[abs_m%2] * cur_tilde_xi[3]) * wigner_D_l_m_plus2
+                                            + (cur_tilde_xi[1] + shortle[abs_m%2] * cur_tilde_xi[2]) * conjugate(wigner_D_l_m_minus2))
+                xi_T_lm_minus = oversqrt2 * ((cur_tilde_xi[0] + shortle[abs_m%2] * cur_tilde_xi[3]) * wigner_D_l_m_minus2
+                                             + (cur_tilde_xi[1] + shortle[abs_m%2] * cur_tilde_xi[2]) * conjugate(wigner_D_l_m_plus2))
 
-                for ell_p in range(l_min, l_max + 1):
-                    
-                    coef_T_ell_p = ipow[ell_p%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
-                    coef_E_B_ell_p = ipow[ell_p%4] * sqrt(pi* (2 * ell_p + 1)/2)
-                    
-                    for m_p in range(-ell_p, ell_p + 1):
+                xi_E_lm_plus = - xi_T_lm_plus
+                xi_E_lm_minus = - xi_T_lm_minus
 
-                        if k_amp_cur > np.sqrt(k_max_list[ell]*k_max_list[ell_p]) and k_amp_cur > min_k_amp:
-                            continue 
+                xi_B_lm_plus = - oversqrt2 * ((cur_tilde_xi[0] + shortle[abs_m%2] * cur_tilde_xi[3]) * wigner_D_l_m_plus2
+                                              - (cur_tilde_xi[1] + shortle[abs_m%2] * cur_tilde_xi[2]) * conjugate(wigner_D_l_m_minus2))
+                xi_B_lm_minus = oversqrt2 * ((cur_tilde_xi[0] + shortle[abs_m%2] * cur_tilde_xi[3]) * wigner_D_l_m_minus2
+                                             - (cur_tilde_xi[1] + shortle[abs_m%2] * cur_tilde_xi[2]) * conjugate(wigner_D_l_m_plus2))
+
+                for ell_p in range(l_start, ell_p_range[1] + 1):
+
+                    coef_T_ell_p = ipow[(ell - ell_p)%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
+                    coef_E_B_ell_p = ipow[(ell - ell_p)%4] * sqrt(pi* (2 * ell_p + 1)/2)
+
+                    # coefficients for the lower block (row ell_p, column ell)
+                    coef_T_ell_p_low = ipow[(ell_p - ell)%4] * sqrt(pi* (2 * ell_p + 1) * (ell_p + 2) * (ell_p + 1) * ell_p * (ell_p - 1) / 2)
+                    coef_E_B_ell_p_low = ipow[(ell_p - ell)%4] * sqrt(pi* (2 * ell_p + 1)/2)
+
+                    for m_p in range(0, ell_p + 1):
                 
                         abs_m_p = np.abs(m_p)
                         wigner_d_l_m_2_cur_index = lm_index[ell_p, abs_m_p]
-                        lm_p_index_cur = ell_p * (ell_p+1) + m_p - ell_range[0] * ell_range[0]
+                        lm_p_index_cur = ell_p * (ell_p+1) + m_p - ell_p_range[0] * ell_p_range[0]
 
-                        if m_p<0:
-                            wigner_d_l_m_p_plus2 = shortle[abs_m_p%2] * wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m_p]
-                            wigner_d_l_m_p_minus2 = shortle[abs_m_p%2] * wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_plus[abs_m_p]
-                        else:
-                            wigner_d_l_m_p_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p] 
-                            wigner_d_l_m_p_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p]  
+                        wigner_D_l_m_p_plus2 = wigner_d_l_m_2[wigner_d_l_m_index, wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p] 
+                        wigner_D_l_m_p_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p]  
 
-                        xi_lm_p_plus = oversqrt4 * (tilde_xi[i, 0] * wigner_d_l_m_p_plus2 + shortle[abs_m%2] * tilde_xi[i, 1] * wigner_d_l_m_p_minus2 + tilde_xi[i, 2] * wigner_d_l_m_p_minus2 + shortle[abs_m%2] * tilde_xi[i, 3] * wigner_d_l_m_p_plus2)
-                        xi_lm_p_minus = oversqrt4 * (tilde_xi[i, 0] * wigner_d_l_m_p_minus2 + shortle[abs_m%2] * tilde_xi[i, 1] * wigner_d_l_m_p_plus2 + tilde_xi[i, 2] * wigner_d_l_m_p_plus2 + shortle[abs_m%2] * tilde_xi[i, 3] * wigner_d_l_m_p_minus2)
-
-                        Xi_plus = (xi_lm_plus * conjugate(xi_lm_p_plus) + xi_lm_minus * conjugate(xi_lm_p_minus))
-                        Xi_minus = (xi_lm_minus * conjugate(xi_lm_p_minus) - xi_lm_plus * conjugate(xi_lm_p_plus))
-
+                        xi_T_lm_p_plus = oversqrt2 * ((cur_tilde_xi[0] + shortle[abs_m_p%2] * cur_tilde_xi[3]) * wigner_D_l_m_p_plus2
+                                                      + (cur_tilde_xi[1] + shortle[abs_m_p%2] * cur_tilde_xi[2]) * conjugate(wigner_D_l_m_p_minus2))
+                        xi_T_lm_p_minus = oversqrt2 * ((cur_tilde_xi[0] + shortle[abs_m_p%2] * cur_tilde_xi[3]) * wigner_D_l_m_p_minus2
+                                                       + (cur_tilde_xi[1] + shortle[abs_m_p%2] * cur_tilde_xi[2]) * conjugate(wigner_D_l_m_p_plus2))
+                            
+                        xi_E_lm_p_plus = - xi_T_lm_p_plus
+                        xi_E_lm_p_minus = - xi_T_lm_p_minus
+                            
+                        xi_B_lm_p_plus = - oversqrt2 * ((cur_tilde_xi[0] + shortle[abs_m_p%2] * cur_tilde_xi[3]) * wigner_D_l_m_p_plus2
+                                                        - (cur_tilde_xi[1] + shortle[abs_m_p%2] * cur_tilde_xi[2]) * conjugate(wigner_D_l_m_p_minus2))
+                        xi_B_lm_p_minus = oversqrt2 * ((cur_tilde_xi[0] + shortle[abs_m_p%2] * cur_tilde_xi[3]) * wigner_D_l_m_p_minus2
+                                                       - (cur_tilde_xi[1] + shortle[abs_m_p%2] * cur_tilde_xi[2]) * conjugate(wigner_D_l_m_p_plus2))
+                                                                                        
+                        Xi_TT = (xi_T_lm_plus * conjugate(xi_T_lm_p_plus) + xi_T_lm_minus * conjugate(xi_T_lm_p_minus))
+                        Xi_EE = (xi_E_lm_plus * conjugate(xi_E_lm_p_plus) + xi_E_lm_minus * conjugate(xi_E_lm_p_minus))
+                        Xi_TE = (xi_T_lm_plus * conjugate(xi_E_lm_p_plus) + xi_T_lm_minus * conjugate(xi_E_lm_p_minus))
+                        Xi_BB = (xi_B_lm_plus * conjugate(xi_B_lm_p_plus) + xi_B_lm_minus * conjugate(xi_B_lm_p_minus))
+                        Xi_EB = (xi_E_lm_plus * conjugate(xi_B_lm_p_plus) + xi_E_lm_minus * conjugate(xi_B_lm_p_minus))
+                        Xi_TB = (xi_T_lm_plus * conjugate(xi_B_lm_p_plus) + xi_T_lm_minus * conjugate(xi_B_lm_p_minus))
+                        
                         # TT correlations
-                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p  * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT
 
                         # EE correlations
-                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
 
                         # BB correlations
-                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
 
                         # TE correlations
-                        C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_plus
+                        C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_TE
 
                         # EB correlations
-                        C_lmlpmp[4, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[4, k_unique_index_cur, ell, ell_p] * Xi_minus
+                        C_lmlpmp[4, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[4, k_unique_index_cur, ell, ell_p] * Xi_EB
 
                         # TB correlations
-                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_minus
+                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_TB
+
+                        if ell != ell_p:
+                            
+                            # Lower block: row (ell_p, m_p), column (ell, m), first field on the row
+                            Xi_TE_low = (xi_T_lm_p_plus * conjugate(xi_E_lm_plus) + xi_T_lm_p_minus * conjugate(xi_E_lm_minus))
+                            Xi_EB_low = (xi_E_lm_p_plus * conjugate(xi_B_lm_plus) + xi_E_lm_p_minus * conjugate(xi_B_lm_minus))
+                            Xi_TB_low = (xi_T_lm_p_plus * conjugate(xi_B_lm_plus) + xi_T_lm_p_minus * conjugate(xi_B_lm_minus))
+                            # TE correlations
+                            C_lmlpmp[3, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[3, k_unique_index_cur, ell_p, ell] * Xi_TE_low
+                            # EB correlations
+                            C_lmlpmp[4, lm_p_index_cur, lm_index_cur] += coef_E_B_ell_p_low * coef_E_B_ell * integrand[4, k_unique_index_cur, ell_p, ell] * Xi_EB_low
+                            # TB correlations
+                            C_lmlpmp[5, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[5, k_unique_index_cur, ell_p, ell] * Xi_TB_low
+
+
+    for l in prange(min_ell, max_ell + 1):
+        for l_p in range(l, ell_p_range[1]+1):
+            for m in range(-l, l + 1):
+                lm_index_new = l * (l+1) + m - ell_range[0]*ell_range[0] # l**2 + l +m - l_min**2
+                lm_index_cal = l * (l+1) - m - ell_range[0]*ell_range[0]
+                for m_p in range(-l_p, 0):
+                    lm_p_index_new = l_p * (l_p+1) + m_p  - ell_range[0]*ell_range[0]
+                    lm_p_index_cal = l_p * (l_p+1) - m_p  - ell_range[0]*ell_range[0]
+                    C_lmlpmp[:, lm_index_new, lm_p_index_new] = shortle[(m+m_p)%2] * conjugate(C_lmlpmp[:, lm_index_cal, lm_p_index_cal])
+                    if l != l_p:
+                        C_lmlpmp[3:, lm_p_index_new, lm_index_new] = shortle[(m+m_p)%2] * conjugate(C_lmlpmp[3:, lm_p_index_cal, lm_index_cal])
 
     C_lmlpmp *= pi*pi / ((2 * V))
 
