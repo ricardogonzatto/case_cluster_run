@@ -5,24 +5,6 @@ from src.E9  import E9
 import numpy as np
 import time
 
-print(f"CUDA   : {cuda.is_available()}")
-print(f"GPUs   : {len(cuda.gpus)} → {[g.name for g in cuda.gpus]}")
-print(f"Current GPU : {cuda.get_current_device().name}")
-print(f"CPU threads : {os.cpu_count()} (multiprocessing uses {mp.cpu_count()}) by default)")
-
-
-dev = cuda.get_current_device()
-warp_size = dev.WARP_SIZE  # Hardware-specific (32 on A100 and most NVIDIA GPUs)
-threads_per_block = 8 * warp_size  # Computes to 256 automatically; adjust multiplier if needed (e.g., 4 for 128)
-
-# Safety: Clamp to device's max (1024 on A100)
-max_threads = dev.MAX_THREADS_PER_BLOCK
-threads_per_block = min(threads_per_block, max_threads)
-
-# Print the results
-print(f"Hardware WARP Size: {warp_size}")
-print(f"Max Threads per Block (Hardware Limit): {max_threads}")
-print(f"Calculated Threads per Block: {threads_per_block}")
 
 def run_topology(topology, LAx, LAy, L1y = 0.1, L2x = 0.1, L2z = 0.1, l_max = 10, l_min = 2, x0 = np.array([0.0, 0.0, 0.0]), l_range= np.array([[2,2]]), lp_range= np.array([[2,2]])):
   
@@ -58,6 +40,8 @@ def run_topology(topology, LAx, LAy, L1y = 0.1, L2x = 0.1, L2z = 0.1, l_max = 10
  
   return c_ell
 
+
+"/share/storage5/ricardogonzatto/cov_matrices_spaces/"
 l_max = 60
 
 L_circle = 1

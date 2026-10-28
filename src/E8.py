@@ -225,7 +225,7 @@ def get_list_of_k_phi_theta(k_max, k_min, LAx, LAy, LBx, LBz, LCy, x0):
         tilde_xi[cur_index, 0] = np.exp(-1j * k_vec @ x0)
         tilde_xi[cur_index, 1] = np.exp(1j * k_vec @ (T_A - (M_A @ x0))) 
         tilde_xi[cur_index, 2] = np.exp(1j * k_vec @ (T_B - (M_B @ x0))) 
-        tilde_xi[cur_index, 3] = np.exp(1j * k_vec @ ((M_B @ T_A) + T_B - (M_A @ M_B @ x0)))
+        tilde_xi[cur_index, 3] = np.exp(1j * k_vec @ ((M_B @ T_A) + T_B - (M_B @ M_A @ x0)))
 
         cur_index += 1
 

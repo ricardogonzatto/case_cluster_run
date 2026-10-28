@@ -329,7 +329,7 @@ def do_integrand_pre_processing(unique_k_amp, tensor_pk_k3, transfer_delta_kl_X,
 def do_integrand_diag_pre_processing(unique_k_amp, tensor_pk_k3, transfer_delta_kl_X, transfer_delta_kl_Y, l_max, l_min):
     # Calculating P(k) / k^3 * Delta_ell_X(k) * Delta_ell'_Y(k) 
     num_k_amp = unique_k_amp.size
-    integrand = np.zeros((num_k_amp, l_max - l_min +1), dtyp= np.float32)
+    integrand = np.zeros((num_k_amp, l_max - l_min +1), dtype= np.float32)
     for i in range(num_k_amp):
         tensor_pk_k3_cur = tensor_pk_k3[i]
         for l in range(l_min, l_max+1): 

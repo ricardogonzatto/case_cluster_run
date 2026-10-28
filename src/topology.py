@@ -322,9 +322,9 @@ class Topology:
         pool.close() 
 
         return transfer_delta_kl 
+
     
-    
-    def get_wigner_d_multiprocessing(self):
+    def get_wigner_d_multiprocessing_old_version(self):
         # Get all the spherical harmonics without phase (phi=0)
         # We use multiprocessing to make this fast
         num_l_m_2 = (self.l_max - self.l_min + 1)*(self.l_max + self.l_min + 2) // 2 # the total number of wigner_d matrices for \lambda =+/-2 
@@ -341,6 +341,34 @@ class Topology:
             self.wigner_d_l_m_2 = np.array(pool.starmap(get_wigner_d, tqdm(args, total=unique_theta_length)), dtype=np.float64)
             print('The Wigner_d metrices array is', round(getsizeof(self.wigner_d_l_m_2) / 1024 / 1024,2), 'MB \n')
             pool.close()
+
+
+    def get_wigner_d_multiprocessing(self):
+            # Get all the spherical harmonics without phase (phi=0)
+            # We use multiprocessing to make this fast
+            num_l_m_2 = (self.l_max - self.l_min + 1)*(self.l_max + self.l_min + 2) // 2 # the total number of wigner_d matrices for \lambda =+/-2 
+    
+            # We only find d^l_{m,mp}(\theta) for unique theta elements. We don't want to recalculate d^l_{m,mp} unnecessarily
+            unique_theta_length = self.theta_unique.size
+            ncpus = multiprocessing.cpu_count()
+            os.environ['OMP_NUM_THREADS'] = '1'
+            print('\nGetting Wigner_d matrices!')
+    
+            # LOW MEMORY:
+            # (1) the table is float32 (half the memory of float64)
+            # (2) it is created once, empty, and filled batch by batch, so the full table never
+            #     exists twice (before: a list with all rows + a copy of it made by np.array)
+            # (3) each batch only sends its own thetas to the workers (before: the whole theta array)
+            self.wigner_d_l_m_2 = np.zeros((unique_theta_length, 2 * num_l_m_2), dtype=np.float32)
+            batch_size = 100000
+            with multiprocessing.Pool(processes=ncpus) as pool:
+                for start in tqdm(range(0, unique_theta_length, batch_size)):
+                    end = min(start + batch_size, unique_theta_length)
+                    theta_batch = self.theta_unique[start:end]
+                    args = zip(np.arange(end - start), repeat(self.l_max), repeat(self.l_min),
+                               repeat(theta_batch), repeat(self.lm_2_index), repeat(num_l_m_2))
+                    self.wigner_d_l_m_2[start:end] = pool.starmap(get_wigner_d, args)
+            print('The Wigner_d metrices array is', round(self.wigner_d_l_m_2.nbytes / 1024 / 1024,2), 'MB \n')
 
     def get_wigner_d_multiprocessing_revised(self):
         # Get all the spherical harmonics without phase (phi=0)

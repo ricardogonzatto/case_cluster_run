@@ -206,6 +206,7 @@ class Topology:
         # np.save(self.root+'norm_corr_matrix_EB_l_{}_{}_lp_{}_{}.npy'.format(
         # l_min, l_max,
         # lp_min, lp_max,), normalized_clmlpmp)
+        return C_lmlpmp
 
                 
 
