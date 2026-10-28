@@ -41,7 +41,7 @@ def run_topology(topology, LAx, LAy, L1y = 0.1, L2x = 0.1, L2z = 0.1, l_max = 10
   return c_ell
 
 
-"/share/storage5/ricardogonzatto/cov_matrices_spaces/"
+#"/share/storage5/ricardogonzatto/cov_matrices_spaces/"
 l_max = 60
 
 L_circle = 1
