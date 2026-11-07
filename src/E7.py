@@ -295,7 +295,7 @@ def get_c_lmlpmp(min_ell,
                         C_lmlpmp[4, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[4, k_unique_index_cur, ell, ell_p] * Xi_EB
 
                         # TB correlations
-                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_TB
+                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[5, k_unique_index_cur, ell_p, ell] * Xi_TB  # integrand[5][a,b] = Delta_B(a)*Delta_T(b) (topology.py), so indices are swapped to get Delta_T*Delta_B
 
                         if ell != ell_p:
                             Xi_TE_low = xi_T_lm_p * conjugate(xi_E_lm)
@@ -306,7 +306,7 @@ def get_c_lmlpmp(min_ell,
                             # EB correlations
                             C_lmlpmp[4, lm_p_index_cur, lm_index_cur] += coef_E_B_ell_p_low * coef_E_B_ell * integrand[4, k_unique_index_cur, ell_p, ell] * Xi_EB_low
                             # TB correlations
-                            C_lmlpmp[5, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[5, k_unique_index_cur, ell_p, ell] * Xi_TB_low
+                            C_lmlpmp[5, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_TB_low  # integrand[5][a,b] = Delta_B(a)*Delta_T(b) (topology.py), so indices are swapped to get Delta_T*Delta_B
 
     # 2 Subspace
     for i in range(subspace2_interval[0], subspace2_interval[1]):
@@ -402,7 +402,7 @@ def get_c_lmlpmp(min_ell,
                         C_lmlpmp[4, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[4, k_unique_index_cur, ell, ell_p] * Xi_EB
 
                         # TB correlations
-                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_TB
+                        C_lmlpmp[5, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[5, k_unique_index_cur, ell_p, ell] * Xi_TB  # integrand[5][a,b] = Delta_B(a)*Delta_T(b) (topology.py), so indices are swapped to get Delta_T*Delta_B
 
                         if ell != ell_p:
                             # Lower block: row (ell_p, m_p), column (ell, m), first field on the row
@@ -414,7 +414,7 @@ def get_c_lmlpmp(min_ell,
                             # EB correlations
                             C_lmlpmp[4, lm_p_index_cur, lm_index_cur] += coef_E_B_ell_p_low * coef_E_B_ell * integrand[4, k_unique_index_cur, ell_p, ell] * Xi_EB_low
                             # TB correlations
-                            C_lmlpmp[5, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[5, k_unique_index_cur, ell_p, ell] * Xi_TB_low
+                            C_lmlpmp[5, lm_p_index_cur, lm_index_cur] += coef_T_ell_p_low * coef_E_B_ell * integrand[5, k_unique_index_cur, ell, ell_p] * Xi_TB_low  # integrand[5][a,b] = Delta_B(a)*Delta_T(b) (topology.py), so indices are swapped to get Delta_T*Delta_B
 
 
 

@@ -45,8 +45,8 @@ def run_topology(topology, LAx, LAy, L1y = 0.1, L2x = 0.1, L2z = 0.1, l_max = 10
 l_max = 60
 
 L_circle = 1
-L_Ay = 0 
-L_1y = 1.2
+L_1y = 1.4
+L_Ay = 0.0
 L_2x = 0.7
 L_2z = 1 
 
@@ -55,11 +55,11 @@ for a in np.array([0.9, 1, 1.1, 1.2, 1.3]):
               l_max = l_max, x0= np.array([0.0, 0.0, 0.0], dtype=np.float64), 
               l_range = np.array([[2,l_max]]), lp_range = np.array([[2,l_max]]))
     
-    np.save(f'c_lmlpmp_untilted_E7_LA{a * L_circle}_LAy{L_Ay}_Ly{L_1y}_L2x{L_2x}_L2z{L_2z}_x=0_0_0_lmax60', C_lmlpmp_untilted)
+    np.save(f'c_lmlpmp_untilted_E7_LA{a * L_circle:.2f}_LAy{L_Ay}_Ly{L_1y}_L2x{L_2x}_L2z{L_2z}_x=0_0_0_lmax60', C_lmlpmp_untilted)
 
 L_circle = 0.73
-L_Ay = 0 
-L_1y = 1.2
+L_1y = 1.4
+L_Ay = 0.0
 L_2x = 0.7
 L_2z = 1 
 
@@ -67,11 +67,11 @@ for a in np.array([0.9, 1, 1.1, 1.2, 1.3]):
     C_lmlpmp_tilted = run_topology(topology = 'E7', LAx = a * L_circle, LAy = L_Ay, L1y = L_1y, L2x = L_2x, L2z = L_2z, 
              l_max = l_max, x0= np.array([-0.1, 0.34, 0.0], dtype=np.float64), 
              l_range = np.array([[2,l_max]]), lp_range = np.array([[2,l_max]]))
-    np.save(f'c_lmlpmp_tilted_E7_LA{a * L_circle}_LAy{L_Ay}_Ly{L_1y}_L2x{L_2x}_L2z{L_2z}_x=-0.1_0.34_0.0_lmax60', C_lmlpmp_tilted)
+    np.save(f'c_lmlpmp_tilted_E7_LA{a * L_circle:.2f}_LAy{L_Ay}_Ly{L_1y}_L2x{L_2x}_L2z{L_2z}_x=-0.1_0.34_0.0_lmax60', C_lmlpmp_tilted)
 
 L_circle = 1
-L_1y = 1.2
-L_Ay = L_1y / 2
+L_1y = 1.4
+L_Ay = 0.0
 L_2x = 0.7
 L_2z = 1 
 
@@ -80,11 +80,11 @@ for a in np.array([0.9, 1, 1.1, 1.2, 1.3]):
               l_max = l_max, x0= np.array([0.0, 0.0, 0.0], dtype=np.float64), 
               l_range = np.array([[2,l_max]]), lp_range = np.array([[2,l_max]]))
     
-    np.save(f'c_lmlpmp_untilted_E9_LA{a * L_circle}_LAy{L_Ay}_Ly{L_1y}_L2x{L_2x}_L2z{L_2z}_x=0_0_0_lmax60', C_lmlpmp_untilted)
+    np.save(f'c_lmlpmp_untilted_E9_LA{a * L_circle:.2f}_LAy{L_Ay}_Ly{L_1y}_L2x{L_2x}_L2z{L_2z}_x=0_0_0_lmax60', C_lmlpmp_untilted)
 
 L_circle = 0.73
-L_1y = 1.2
-L_Ay = L_1y / 2
+L_1y = 1.4
+L_Ay = 0.0
 L_2x = 0.7
 L_2z = 1 
 
@@ -92,5 +92,5 @@ for a in np.array([0.9, 1, 1.1, 1.2, 1.3]):
     C_lmlpmp_tilted = run_topology(topology = 'E9', LAx = a * L_circle, LAy = L_Ay, L1y = L_1y, L2x = L_2x, L2z = L_2z, 
              l_max = l_max, x0= np.array([-0.1, 0.34, 0.0], dtype=np.float64), 
              l_range = np.array([[2,l_max]]), lp_range = np.array([[2,l_max]]))
-    np.save(f'c_lmlpmp_tilted_E9_LA{a * L_circle}_LAy{L_Ay}_Ly{L_1y}_L2x{L_2x}_L2z{L_2z}_x=-0.1_0.34_0.0_lmax60', C_lmlpmp_tilted)
+    np.save(f'c_lmlpmp_tilted_E9_LA{a * L_circle:.2f}_LAy{L_Ay}_Ly{L_1y}_L2x{L_2x}_L2z{L_2z}_x=-0.1_0.34_0.0_lmax60', C_lmlpmp_tilted)
 
