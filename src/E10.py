@@ -336,21 +336,21 @@ def get_c_lmlpmp(min_ell,
                         xi_E_lm_p = xi_T_lm_p #Not (-1) because the CAMB convention in the transfer functions
                         xi_B_lm_p = cur_tilde_xi[0] * wigner_D_l_m_p_plus2 - cur_tilde_xi[1] * wigner_D_l_m_p_minus2
                                                                         
-                        Xi_TT = xi_T_lm * conjugate(xi_T_lm_p)
-                        Xi_EE = xi_E_lm * conjugate(xi_E_lm_p)
+#                        Xi_TT = xi_T_lm * conjugate(xi_T_lm_p)
+#                        Xi_EE = xi_E_lm * conjugate(xi_E_lm_p)
                         Xi_TE = xi_T_lm * conjugate(xi_E_lm_p)
-                        Xi_BB = xi_B_lm * conjugate(xi_B_lm_p)
+#                        Xi_BB = xi_B_lm * conjugate(xi_B_lm_p)
                         Xi_EB = xi_E_lm * conjugate(xi_B_lm_p)
                         Xi_TB = xi_T_lm * conjugate(xi_B_lm_p)
                         
                         # TT correlations
-                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT 
+#                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT 
 
                         # EE correlations
-                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
+#                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
 
                         # BB correlations
-                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
+#                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
 
                         # TE correlations
                         C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_TE
@@ -445,21 +445,21 @@ def get_c_lmlpmp(min_ell,
                         xi_B_lm_p_plus = -(cur_tilde_xi[0] * wigner_D_l_m_p_plus2 - shortle[abs_m_p%2] * cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_minus2))
                         xi_B_lm_p_minus = (cur_tilde_xi[0] * wigner_D_l_m_p_minus2 - shortle[abs_m_p%2] * cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_plus2))
                                                                                         
-                        Xi_TT = (xi_T_lm_plus * conjugate(xi_T_lm_p_plus) + xi_T_lm_minus * conjugate(xi_T_lm_p_minus))
-                        Xi_EE = (xi_E_lm_plus * conjugate(xi_E_lm_p_plus) + xi_E_lm_minus * conjugate(xi_E_lm_p_minus))
+#                        Xi_TT = (xi_T_lm_plus * conjugate(xi_T_lm_p_plus) + xi_T_lm_minus * conjugate(xi_T_lm_p_minus))
+#                        Xi_EE = (xi_E_lm_plus * conjugate(xi_E_lm_p_plus) + xi_E_lm_minus * conjugate(xi_E_lm_p_minus))
                         Xi_TE = (xi_T_lm_plus * conjugate(xi_E_lm_p_plus) + xi_T_lm_minus * conjugate(xi_E_lm_p_minus))
-                        Xi_BB = (xi_B_lm_plus * conjugate(xi_B_lm_p_plus) + xi_B_lm_minus * conjugate(xi_B_lm_p_minus))
+#                        Xi_BB = (xi_B_lm_plus * conjugate(xi_B_lm_p_plus) + xi_B_lm_minus * conjugate(xi_B_lm_p_minus))
                         Xi_EB = (xi_E_lm_plus * conjugate(xi_B_lm_p_plus) + xi_E_lm_minus * conjugate(xi_B_lm_p_minus))
                         Xi_TB = (xi_T_lm_plus * conjugate(xi_B_lm_p_plus) + xi_T_lm_minus * conjugate(xi_B_lm_p_minus))
                         
                         # TT correlations
-                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p  * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT
+#                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p  * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT
 
                         # EE correlations
-                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
+#                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
 
                         # BB correlations
-                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
+#                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
 
                         # TE correlations
                         C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_TE
@@ -554,21 +554,21 @@ def get_c_lmlpmp(min_ell,
                         xi_B_lm_p_plus = -(cur_tilde_xi[0] * wigner_D_l_m_p_plus2 - cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_minus2))
                         xi_B_lm_p_minus = (cur_tilde_xi[0] * wigner_D_l_m_p_minus2 - cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_plus2))
                                                                                         
-                        Xi_TT = (xi_T_lm_plus * conjugate(xi_T_lm_p_plus) + xi_T_lm_minus * conjugate(xi_T_lm_p_minus))
-                        Xi_EE = (xi_E_lm_plus * conjugate(xi_E_lm_p_plus) + xi_E_lm_minus * conjugate(xi_E_lm_p_minus))
+#                        Xi_TT = (xi_T_lm_plus * conjugate(xi_T_lm_p_plus) + xi_T_lm_minus * conjugate(xi_T_lm_p_minus))
+#                        Xi_EE = (xi_E_lm_plus * conjugate(xi_E_lm_p_plus) + xi_E_lm_minus * conjugate(xi_E_lm_p_minus))
                         Xi_TE = (xi_T_lm_plus * conjugate(xi_E_lm_p_plus) + xi_T_lm_minus * conjugate(xi_E_lm_p_minus))
-                        Xi_BB = (xi_B_lm_plus * conjugate(xi_B_lm_p_plus) + xi_B_lm_minus * conjugate(xi_B_lm_p_minus))
+#                        Xi_BB = (xi_B_lm_plus * conjugate(xi_B_lm_p_plus) + xi_B_lm_minus * conjugate(xi_B_lm_p_minus))
                         Xi_EB = (xi_E_lm_plus * conjugate(xi_B_lm_p_plus) + xi_E_lm_minus * conjugate(xi_B_lm_p_minus))
                         Xi_TB = (xi_T_lm_plus * conjugate(xi_B_lm_p_plus) + xi_T_lm_minus * conjugate(xi_B_lm_p_minus))
                         
                         # TT correlations
-                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p  * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT
+#                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p  * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT
 
                         # EE correlations
-                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
+#                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
 
                         # BB correlations
-                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
+#                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
 
                         # TE correlations
                         C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_TE
@@ -673,21 +673,21 @@ def get_c_lmlpmp(min_ell,
                         xi_B_lm_p_minus = oversqrt2 * ((cur_tilde_xi[0] + shortle[abs_m_p%2] * cur_tilde_xi[3]) * wigner_D_l_m_p_minus2
                                                        - (cur_tilde_xi[1] + shortle[abs_m_p%2] * cur_tilde_xi[2]) * conjugate(wigner_D_l_m_p_plus2))
                                                                                         
-                        Xi_TT = (xi_T_lm_plus * conjugate(xi_T_lm_p_plus) + xi_T_lm_minus * conjugate(xi_T_lm_p_minus))
-                        Xi_EE = (xi_E_lm_plus * conjugate(xi_E_lm_p_plus) + xi_E_lm_minus * conjugate(xi_E_lm_p_minus))
+#                        Xi_TT = (xi_T_lm_plus * conjugate(xi_T_lm_p_plus) + xi_T_lm_minus * conjugate(xi_T_lm_p_minus))
+#                        Xi_EE = (xi_E_lm_plus * conjugate(xi_E_lm_p_plus) + xi_E_lm_minus * conjugate(xi_E_lm_p_minus))
                         Xi_TE = (xi_T_lm_plus * conjugate(xi_E_lm_p_plus) + xi_T_lm_minus * conjugate(xi_E_lm_p_minus))
-                        Xi_BB = (xi_B_lm_plus * conjugate(xi_B_lm_p_plus) + xi_B_lm_minus * conjugate(xi_B_lm_p_minus))
+#                        Xi_BB = (xi_B_lm_plus * conjugate(xi_B_lm_p_plus) + xi_B_lm_minus * conjugate(xi_B_lm_p_minus))
                         Xi_EB = (xi_E_lm_plus * conjugate(xi_B_lm_p_plus) + xi_E_lm_minus * conjugate(xi_B_lm_p_minus))
                         Xi_TB = (xi_T_lm_plus * conjugate(xi_B_lm_p_plus) + xi_T_lm_minus * conjugate(xi_B_lm_p_minus))
                         
                         # TT correlations
-                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p  * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT
+#                        C_lmlpmp[0, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_T_ell_p  * integrand[0, k_unique_index_cur, ell, ell_p] * Xi_TT
 
                         # EE correlations
-                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
+#                        C_lmlpmp[1, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[1, k_unique_index_cur, ell, ell_p] * Xi_EE
 
                         # BB correlations
-                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
+#                        C_lmlpmp[2, lm_index_cur, lm_p_index_cur] += coef_E_B_ell * coef_E_B_ell_p  * integrand[2, k_unique_index_cur, ell, ell_p] * Xi_BB
 
                         # TE correlations
                         C_lmlpmp[3, lm_index_cur, lm_p_index_cur] += coef_T_ell * coef_E_B_ell_p  * integrand[3, k_unique_index_cur, ell, ell_p] * Xi_TE
