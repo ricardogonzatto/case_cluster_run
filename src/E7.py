@@ -246,7 +246,7 @@ def get_c_lmlpmp(min_ell,
 
 
                 xi_T_lm = cur_tilde_xi[0] * wigner_D_l_m_plus2 + cur_tilde_xi[1] * wigner_D_l_m_minus2
-                xi_E_lm = - xi_T_lm
+                xi_E_lm = xi_T_lm   #Not (-1) because the CAMB convention in the transfer functions
                 xi_B_lm = cur_tilde_xi[0] * wigner_D_l_m_plus2 - cur_tilde_xi[1] * wigner_D_l_m_minus2
 
                 for ell_p in range(l_start, ell_p_range[1] + 1):
@@ -269,7 +269,7 @@ def get_c_lmlpmp(min_ell,
                         wigner_D_l_m_p_minus2 =  wigner_d_l_m_2[wigner_d_l_m_index, total_num_l_m + wigner_d_l_m_2_cur_index] * phase_list_minus[abs_m_p]  
 
                         xi_T_lm_p = cur_tilde_xi[0] * wigner_D_l_m_p_plus2 + cur_tilde_xi[1] * wigner_D_l_m_p_minus2
-                        xi_E_lm_p = - xi_T_lm_p
+                        xi_E_lm_p = xi_T_lm_p #Not (-1) because the CAMB convention in the transfer functions
                         xi_B_lm_p = cur_tilde_xi[0] * wigner_D_l_m_p_plus2 - cur_tilde_xi[1] * wigner_D_l_m_p_minus2
                                                                         
                         Xi_TT = xi_T_lm * conjugate(xi_T_lm_p)
@@ -346,8 +346,8 @@ def get_c_lmlpmp(min_ell,
                 xi_T_lm_plus = (cur_tilde_xi[0] * wigner_D_l_m_plus2 + cur_tilde_xi[1] * conjugate(wigner_D_l_m_minus2))
                 xi_T_lm_minus = (cur_tilde_xi[0] * wigner_D_l_m_minus2 + cur_tilde_xi[1] * conjugate(wigner_D_l_m_plus2))
 
-                xi_E_lm_plus = - xi_T_lm_plus
-                xi_E_lm_minus = - xi_T_lm_minus
+                xi_E_lm_plus = xi_T_lm_plus #Not (-1) because the CAMB convention in the transfer functions
+                xi_E_lm_minus = xi_T_lm_minus #Not (-1) because the CAMB convention in the transfer functions
 
                 xi_B_lm_plus = -(cur_tilde_xi[0] * wigner_D_l_m_plus2 - cur_tilde_xi[1] * conjugate(wigner_D_l_m_minus2))
                 xi_B_lm_minus = (cur_tilde_xi[0] * wigner_D_l_m_minus2 - cur_tilde_xi[1] * conjugate(wigner_D_l_m_plus2))
@@ -373,8 +373,8 @@ def get_c_lmlpmp(min_ell,
                         xi_T_lm_p_plus = (cur_tilde_xi[0] * wigner_D_l_m_p_plus2 + cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_minus2))
                         xi_T_lm_p_minus = (cur_tilde_xi[0] * wigner_D_l_m_p_minus2+ cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_plus2))
                           
-                        xi_E_lm_p_plus = - xi_T_lm_p_plus
-                        xi_E_lm_p_minus = - xi_T_lm_p_minus
+                        xi_E_lm_p_plus = xi_T_lm_p_plus #Not (-1) because the CAMB convention in the transfer functions
+                        xi_E_lm_p_minus = xi_T_lm_p_minus #Not (-1) because the CAMB convention in the transfer functions
                           
                         xi_B_lm_p_plus = -(cur_tilde_xi[0] * wigner_D_l_m_p_plus2 - cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_minus2))
                         xi_B_lm_p_minus = (cur_tilde_xi[0] * wigner_D_l_m_p_minus2 - cur_tilde_xi[1] * conjugate(wigner_D_l_m_p_plus2))
